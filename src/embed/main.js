@@ -27,8 +27,20 @@ var Message = require('../message');
 var SceneInfo = require('./scene-info');
 var Stats = require('../../node_modules/stats-js/build/stats.min');
 var Util = require('../util');
-var WebVRPolyfill = require('webvr-polyfill');
-var WorldRenderer = require('./world-renderer');
+require('webvr-polyfill');
+
+/* FORCE THE POLYFILL BECAUSE CROSS BROWSER POOP */
+WebVRPolyfill.prototype.isWebVRAvailable = function () {
+  return false;
+};
+
+WebVRPolyfill.prototype.isDeprecatedWebVRAvailable = function () {
+  return false;
+};
+InitializeWebVRPolyfill();
+/* END FORCING */
+
+WorldRenderer = require('./world-renderer');
 
 var receiver = new IFrameMessageReceiver();
 receiver.on(Message.PLAY, onPlayRequest);
