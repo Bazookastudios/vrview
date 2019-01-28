@@ -35,12 +35,12 @@ var VRDisplayPositionSensorDevice = require('webvr-polyfill/src/display-wrappers
 /* FORCE THE POLYFILL BECAUSE CROSS BROWSER POOP */
 WebVRConfig.CARDBOARD_UI_DISABLED = true;
 WebVRPolyfill.prototype.isWebVRAvailable = function () {
-  return false;
+  // Only allow firefox to use the native implementation, all others suck big time.
+  return navigator.userAgent.search("Firefox") > -1 && ('getVRDisplays' in navigator);
 };
 WebVRPolyfill.prototype.isDeprecatedWebVRAvailable = function () {
-  return false;
+  return navigator.userAgent.search("Firefox") > -1 && ('getVRDisplays' in navigator);
 };
-InitializeWebVRPolyfill();
 
 /* OVERRIDE THE DEVICES/CONTROLLERS/DISPLAYS */
 WebVRPolyfill.prototype.populateDevices = function() {
@@ -60,6 +60,12 @@ WebVRPolyfill.prototype.populateDevices = function() {
 
   this.devicesPopulated = true;
 };
+
+/* INITIALIZE */
+var polyfill = new WebVRPolyfill();
+polyfill.enablePolyfill();
+polyfill.enableDeprecatedPolyfill();
+
 /* END FORCING HACKERY */
 
 WorldRenderer = require('./world-renderer');
