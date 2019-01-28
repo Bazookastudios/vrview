@@ -27,8 +27,42 @@ var Message = require('../message');
 var SceneInfo = require('./scene-info');
 var Stats = require('../../node_modules/stats-js/build/stats.min');
 var Util = require('../util');
-var WebVRPolyfill = require('webvr-polyfill');
-var WorldRenderer = require('./world-renderer');
+require('webvr-polyfill');
+var CustomVRDisplay = require('./custom-vr-display');
+var VRDisplayHMDDevice = require('webvr-polyfill/src/display-wrappers').VRDisplayHMDDevice;
+var VRDisplayPositionSensorDevice = require('webvr-polyfill/src/display-wrappers').VRDisplayPositionSensorDevice;
+
+/* FORCE THE POLYFILL BECAUSE CROSS BROWSER POOP */
+WebVRConfig.CARDBOARD_UI_DISABLED = true;
+WebVRPolyfill.prototype.isWebVRAvailable = function () {
+  return false;
+};
+WebVRPolyfill.prototype.isDeprecatedWebVRAvailable = function () {
+  return false;
+};
+InitializeWebVRPolyfill();
+
+/* OVERRIDE THE DEVICES/CONTROLLERS/DISPLAYS */
+WebVRPolyfill.prototype.populateDevices = function() {
+  if (this.devicesPopulated) {
+    return;
+  }
+
+  // Initialize our virtual VR devices.
+  var vrDisplay = new CustomVRDisplay();
+  this.connectDisplay(vrDisplay);
+
+  // For backwards compatibility
+  if (window.WebVRConfig.ENABLE_DEPRECATED_API) {
+    this.devices.push(new VRDisplayHMDDevice(vrDisplay));
+    this.devices.push(new VRDisplayPositionSensorDevice(vrDisplay));
+  }
+
+  this.devicesPopulated = true;
+};
+/* END FORCING HACKERY */
+
+WorldRenderer = require('./world-renderer');
 
 var receiver = new IFrameMessageReceiver();
 receiver.on(Message.PLAY, onPlayRequest);

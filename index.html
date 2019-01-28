@@ -28,9 +28,19 @@
   </a>
 
   <script>
+    /**
+     * NOTE: the following config values are no longer relevant because of the changes made in embed/main.js
+     * - CARDBOARD_UI_DISABLED
+     * - TOUCH_PANNER_DISABLED
+     * - MOUSE_KEYBOARD_CONTROLS_DISABLED
+     *
+     */
     WebVRConfig = {
+      ALWAYS_APPEND_POLYFILL_DISPLAY: false,
       BUFFER_SCALE: 0.5,
-      TOUCH_PANNER_DISABLED: false
+
+      // because I override some prototype functions the initialization needs to wait
+      DEFER_INITIALIZATION: true
     };
   </script>
 
