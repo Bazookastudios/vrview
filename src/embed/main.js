@@ -131,8 +131,15 @@ function onVideoTap() {
 }
 
 function onRenderLoad(event) {
-  if (event.videoElement) {
+  // Make sure touch dragging does not trigger pull to refresh stuff this event listener is added to canvas instead of
+  // window because window listeners are treated as static and can not be prevented.
+  // https://www.chromestatus.com/features/5093566007214080
+  var canvas = document.querySelector('canvas');
+  if (canvas) {
+    canvas.addEventListener('touchstart', function(e) {e.preventDefault()});
+  }
 
+  if (event.videoElement) {
     var scene = SceneInfo.loadFromGetParams();
 
     // On mobile, tell the user they need to tap to start. Otherwise, autoplay.
