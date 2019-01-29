@@ -27,11 +27,6 @@ function IFrameMessageSender(iframe) {
     return;
   }
   this.iframe = iframe;
-
-  // On iOS, if the iframe is across domains, also send DeviceMotion data.
-  if (this.isIOS_()) {
-    window.addEventListener('devicemotion', this.onDeviceMotion_.bind(this), false);
-  }
 }
 
 /**
@@ -40,15 +35,6 @@ function IFrameMessageSender(iframe) {
 IFrameMessageSender.prototype.send = function(message) {
   var iframeWindow = this.iframe.contentWindow;
   iframeWindow.postMessage(message, '*');
-};
-
-IFrameMessageSender.prototype.onDeviceMotion_ = function(e) {
-  var message = {
-    type: Message.DEVICE_MOTION,
-    deviceMotionEvent: this.cloneDeviceMotionEvent_(e)
-  };
-
-  this.send(message);
 };
 
 IFrameMessageSender.prototype.cloneDeviceMotionEvent_ = function(e) {
