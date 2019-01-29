@@ -316,6 +316,9 @@ function onPlay() {
     type: 'paused',
     data: false
   });
+
+  // make sure the play button hides on autoplay
+  hidePlayButton();
 }
 
 function onPause() {
